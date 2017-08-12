@@ -1,0 +1,28 @@
+language: go
+
+# Currently only the master branch is used in this repo.
+branches:
+  only:
+    - master
+
+o:
+  - 1.7
+  - 1.8
+  - tip
+
+cache:
+  directories:
+    - $GOPATH/src
+    - $GOPATH/pkg
+
+install:
+- go get github.com/gorilla/mux
+
+
+before_script:
+  - GO_FILES=$(find . -iname '*.go')  # All the .go files
+
+script:
+  - test -z $(gofmt -s -l $GO_FILES)  # Fail if a .go file hasn't been formatted with gofmt
+  - go test -v -race main_test.go     # Run all the tests with the race detector enabled
+  - go vet main.go app.go model.go    # go vet is the official Go static analyzer
